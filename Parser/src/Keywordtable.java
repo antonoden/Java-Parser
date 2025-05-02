@@ -1,7 +1,40 @@
-public class Keywordtable {
+import java.util.ArrayList;
+import java.util.List;
 
-    public Keywordtable() {
-        
+public class KeywordTable {
+
+    private List<Token> keywords;
+
+    public KeywordTable() {
+        this.keywords = new ArrayList<Token>() {{
+            add(new Token(TokenType.PROGRAM,   "program"));
+            add(new Token(TokenType.INPUT,     "input"));
+            add(new Token(TokenType.OUTPUT,    "outut"));
+            add(new Token(TokenType.VAR,       "var"));
+            add(new Token(TokenType.BEGIN,     "begin"));
+            add(new Token(TokenType.END,       "end"));
+            add(new Token(TokenType.BOOLEAN,   "boolean"));
+            add(new Token(TokenType.INTEGER,   "integer"));
+            add(new Token(TokenType.REAL,      "real"));
+        }};
     }
     
+    private void printLineDivider(int numberOfCharacters, char character) {
+        for(int i=0; i<numberOfCharacters; i++) {
+            System.out.print(character);
+        }
+        System.out.println();
+    }
+
+    public void printTable() {
+        printLineDivider(56, '_');
+        for(int i=0; i<keywords.size(); i++) {
+            if(keywords.get(i).isAscii) {
+                System.out.printf("\t%s\t%s\n", keywords.get(i).getValue(), keywords.get(i).getAsciiType());
+            } else {
+                System.out.printf("\t%s\t%s\n", keywords.get(i).getType(), keywords.get(i).getType().getValue());
+            }
+        }
+        printLineDivider(56, '_');
+    }
 }
