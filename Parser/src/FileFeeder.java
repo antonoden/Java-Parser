@@ -24,7 +24,7 @@ public class FileFeeder {
     /* Loads in filepaths from testfiels directory */
     private void loadFilePaths(String searchString) {
         try {
-            Files.list(Paths.get("Parser/testfiles/"))
+            Files.list(Paths.get("Parser/TestSuite/"))
                 .filter(Files::isRegularFile)
                 .filter(file -> file.getFileName().toString().startsWith(searchString))
                 .forEach(filePaths::add);

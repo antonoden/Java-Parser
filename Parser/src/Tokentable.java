@@ -48,4 +48,15 @@ public class TokenTable {
         }
         printLineDivider(56, '_');
     }
+
+    public boolean isValidSymbol(char symbol) {
+        for(Token token : tokens) {
+            if(token.isAscii) {
+                if(token.getValue() == Character.toString(symbol)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 }

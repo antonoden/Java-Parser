@@ -37,4 +37,24 @@ public class KeywordTable {
         }
         printLineDivider(56, '_');
     }
+
+    /* Returns true if string feeded to function is contained within keywordtable */
+    public boolean isKeyword(String string) {
+        for(Token keyword : keywords) {
+            if(keyword.getValue() == string) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /* retunrns Tokentype of argumented string. If string is not contained in table Tokentype.ID is returned */
+    public TokenType getTokentype(String string) {
+        for(Token keyword : keywords) {
+            if(keyword.getValue() == string) {
+                keyword.getType();
+            }
+        }
+        return TokenType.ID;
+    }
 }

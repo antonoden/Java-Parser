@@ -12,8 +12,8 @@ public class Parser {
     }
 
     public void parse(Path filepath) {
-        this.lexer = new Lexer();
-        this.lexer.fetchProgram(filepath);
+        this.lexer = new Lexer(filepath);
+        System.out.printf("TestSuite/%s\n", this.lexer.getFilename());
         this.lexer.printProgram();
     }
 }
