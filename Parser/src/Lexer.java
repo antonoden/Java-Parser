@@ -8,9 +8,9 @@ public class Lexer {
     private List<String> program;
     private String filename;
     private String filepath;
-    private List<Token> lexemes;
-    private TokenTable tokentable;
+    private List<Token> tokens;
     private KeywordTable keywordtable;
+    private int currentToken;
 
     public Lexer(Path filePath) {  
 
@@ -18,6 +18,7 @@ public class Lexer {
         /* reading in file from argumented filepath */
         try {
             this.program = Files.readAllLines(filePath);
+            this.program.add("$");
             this.filepath = filePath.toString();
             this.filename = filePath.getFileName().toString();
         } catch (IOException e) {
@@ -29,11 +30,10 @@ public class Lexer {
         /****************************************** */
         /* lexify the program read in above */
         try {
-            this.lexemes = new ArrayList<Token>(); // list with Tokens to be filled with lexemes
+            this.tokens = new ArrayList<Token>(); // list with Tokens to be filled
             
             // supporting objects filling list above
             this.keywordtable = new KeywordTable();
-            this.tokentable = new TokenTable();
             int charpointer;
             StringBuilder tempString = new StringBuilder();
 
@@ -66,15 +66,14 @@ public class Lexer {
                         } while(Character.isDigit(line.charAt(charpointer)) || 
                                 Character.isLetter(line.charAt(charpointer)));
 
-                        // checks if keyword and add if so, if not add as ID. 
+                        // checks if keyword and adds keywords, if not add as ID. 
                         if(keywordtable.isKeyword(tempString.toString())) {
-                            
-                            lexemes.add(new Token(
+                            this.tokens.add(new Token(
                                             keywordtable.getTokentype(tempString.toString()), 
                                             tempString.toString()
                                         ));
                         } else {
-                            lexemes.add(new Token(TokenType.ID, tempString.toString()));
+                            this.tokens.add(new Token(TokenType.ID, tempString.toString()));
                         }
 
                     } 
@@ -88,66 +87,95 @@ public class Lexer {
 
                             if(charpointer >= line.length()) break;
                         }
-                        lexemes.add(new Token(TokenType.NUMBER, tempString.toString()));
+                        this.tokens.add(new Token(TokenType.NUMBER, tempString.toString()));
                     }
 
                     // lexeme is assumed to be a special character
                     else {  
-                        tempString.append(line.charAt(charpointer));
-                        if(line.charAt(charpointer) == ':') {
-                            charpointer++;
-                            if(line.charAt(charpointer) == '=') {
-                                tempString.append(line.charAt(charpointer++));
+                        if(line.charAt(charpointer) == ':' && line.length()-1 > charpointer) {
+                            if(line.charAt(charpointer+1) == '=') {
+
+                                this.tokens.add(new Token(TokenType.ASSIGN));
+                                charpointer += 2;
+                            } else {
+
+                                this.tokens.add(new Token(line.charAt(charpointer)));
+                                charpointer++;
                             }
                         } else {
+
+                            this.tokens.add(new Token(line.charAt(charpointer)));
                             charpointer++;
                         }
-                        lexemes.add(new Token(TokenType.CHAR, tempString.toString()));
+
+                        
                     }
-                    //System.out.println("charpointer:" + charpointer + ", length:" + line.length());
                 }
             }
         } catch (Exception e) {
             System.out.println("Exception attempting to lexify program: " + e.getMessage());
         }
 
-        System.out.print("Lexemelist: ");
-        for(Token token : lexemes) {
-            System.out.print("["+ token.getValue() + "]");
-        }
-        System.out.println();
+        this.currentToken = 0;
     }
+    /* END CONSTRUCTOR */
 
     public String getFilename() {
+
         return this.filename;
     }
 
     public String getfilepath() {
+
         return this.filepath;
+    }
+
+    public Token lookahead() {
+
+        return this.tokens.get(currentToken);
+    }
+
+    public Token getNextToken() {
+
+        return this.tokens.get(currentToken++);
+    }
+
+    public boolean programEmpty() {
+        if(this.tokens.isEmpty()) { 
+            
+            return true; 
+        }
+        return false;
+    }
+
+    /* Returns tokens still left to return from this.tokens */
+    public String getTokensLeftToParse() {
+        String tokenlistTail = "";
+        int tokenlistLength = this.tokens.size();
+        for(int i=currentToken-1; i<tokenlistLength-1; i++) {
+            tokenlistTail += this.tokens.get(i).getValue()+" ";
+        }
+        return tokenlistTail;
     }
 
 /************************************************************************ */
 /* FUNCTIONS TO PRINT OUT INFORMATION FROM THE LEXER */
 /*************************************************************************** */
-    /* Function to create division within output */
-    private void printLineDivider(int numberOfCharacters, char character) {
-        for(int i=0; i<numberOfCharacters; i++) {
-            System.out.print(character);
-        }
-        System.out.println();
-    }
-
-    /* printing out filename of program in buffer */
-    public void printProgramFilename() {
-        System.out.println(filename);
-    }
 
     /* Function that prints out the program that's in buffer */
     public void printProgram() {
-        printLineDivider(56, '_');
+        
         for (String line : program) {
+            
             System.out.println(line);
         }
-        printLineDivider(56, '_');
+    }
+
+    public void printLexemeList() {
+        System.out.print("Lexemelist: ");
+        for(Token token : this.tokens) {
+            System.out.print("["+ token.getValue() + "]");
+        }
+        System.out.println();
     }
 }

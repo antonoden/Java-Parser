@@ -12,6 +12,13 @@ public class Token {
         this.isAscii = false;
     }
 
+    public Token(TokenType type) {
+        this.type = type;
+        this.value = type.toString();
+        this.asciitype = -1;
+        this.isAscii = false;
+    }
+
     public Token(char character) {
         this.type = TokenType.CHAR;
         this.value = String.valueOf(character);

@@ -27,6 +27,7 @@ public class FileFeeder {
             Files.list(Paths.get("Parser/TestSuite/"))
                 .filter(Files::isRegularFile)
                 .filter(file -> file.getFileName().toString().startsWith(searchString))
+                .filter(file -> file.getFileName().toString().endsWith(".pas"))
                 .forEach(filePaths::add);
             currentFilePath = 0;
         } catch (IOException e) {
